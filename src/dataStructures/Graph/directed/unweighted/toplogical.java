@@ -65,6 +65,7 @@ public class toplogical {
             }
             return false;
         }
+        int x = 10;
 
         boolean isCyclicDFS(int s , int[] visted) {
             boolean res = false;
