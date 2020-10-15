@@ -1,4 +1,4 @@
-package cs201Assingment.lab3.q4;
+package algorithms.divide_and_conquer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

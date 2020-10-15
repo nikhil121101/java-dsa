@@ -1,4 +1,4 @@
-package cs201Assingment.lab3.q2;
+package algorithms.divide_and_conquer;
 
 public class MaxSubarray {
     public static void main(String args[]) {

@@ -1,4 +1,4 @@
-package cs201Assingment.lab3.q3;
+package algorithms.divide_and_conquer;
 
 public class inversionPairs {
     public static int reversePairs(int[] a) {

@@ -1,4 +1,4 @@
-package cs201Assingment.lab3.q5;
+package algorithms.divide_and_conquer;
 
 import java.util.Scanner;
 
