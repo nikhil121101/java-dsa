@@ -1,13 +1,14 @@
-package algorithms.divide_and_conquer;
+//package algorithms.divide_and_conquer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
-public class ClosestPair {
+class ClosestPair {
 
     static float[] find_closest_pair(int[][] xSorted, int[][] ySorted , int n) {
         //System.out.println("xSorted");
@@ -179,10 +180,11 @@ public class ClosestPair {
             public int compare(int[] o1, int[] o2) {
                 return o1[1] - o2[1];
             }
-        });
-        float res[] = find_closest_pair(xSorted , pts , n);
-        System.out.println((int)Math.min(res[2] , res[5]) + " "  + (int)Math.max(res[2] , res[5]) + " " + res[6]);
 
+        });
+        DecimalFormat df = new DecimalFormat("#.######");
+        float res[] = find_closest_pair(xSorted , pts , n);
+        System.out.println((int)Math.min(res[2] , res[5]) + " "  + (int)Math.max(res[2] , res[5]) + " " + df.format(res[6]));
     }
 
 }
@@ -201,5 +203,9 @@ public class ClosestPair {
 -7 -2
 4 5
 1 1
+
+2
+0 1
+1 2
 
  */

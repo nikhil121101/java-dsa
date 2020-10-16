@@ -124,16 +124,7 @@ class FastReader
 
 public class Main {
 
-    static BufferedReader br;
     static FastReader f = new FastReader();
-    static {
-        try {
-            br = new BufferedReader(new FileReader(new File("C:\\Users\\ANSHIKA\\IdeaProjects\\java dsa\\src\\inp.txt")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     static StringTokenizer st;
     static StringBuilder sb = new StringBuilder("");
     private static int m = (int)1e9 + 7;
@@ -141,9 +132,8 @@ public class Main {
 
     static int[] inputArray(int n) throws IOException {
         int[] a = new int[n];
-        st = new StringTokenizer(br.readLine());
         for(int i = 0 ; i < n ; i++) {
-            a[i] = Integer.parseInt(st.nextToken());
+            a[i] = f.nextInt();
         }
         return a;
     }
@@ -196,10 +186,12 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        int n = f.nextInt() , k = f.nextInt();
-        int res = 0;
-        while(n-- != 0) {
-            res += f.nextInt() % k == 0 ? 1 : 0;
+        int n = f.nextInt() , d = f.nextInt();
+        int a[][] = new int[n][d];
+        for(int i = 0 ; i < n ; i++) {
+            for(int j = 0 ; j < n ; j++) {
+                a[i][j] = f.nextInt();
+            }
         }
     }
 
