@@ -1,35 +1,31 @@
+package algorithms.dp_bitMasking;
+
 import java.io.*;
 import java.util.*;
 
-public class Main {
-
-    static class FastReader
-    {
+public class N_worker_N_jobs {
+    static class FastReader {
         final private int BUFFER_SIZE = 1 << 16;
         private DataInputStream din;
         private byte[] buffer;
         private int bufferPointer, bytesRead;
 
-        public FastReader()
-        {
+        public FastReader() {
             din = new DataInputStream(System.in);
             buffer = new byte[BUFFER_SIZE];
             bufferPointer = bytesRead = 0;
         }
 
-        public FastReader(String file_name) throws IOException
-        {
+        public FastReader(String file_name) throws IOException {
             din = new DataInputStream(new FileInputStream(file_name));
             buffer = new byte[BUFFER_SIZE];
             bufferPointer = bytesRead = 0;
         }
 
-        public String readLine() throws IOException
-        {
+        public String readLine() throws IOException {
             byte[] buf = new byte[64]; // line length
             int cnt = 0, c;
-            while ((c = read()) != -1)
-            {
+            while ((c = read()) != -1) {
                 if (c == '\n')
                     break;
                 buf[cnt++] = (byte) c;
@@ -37,8 +33,7 @@ public class Main {
             return new String(buf, 0, cnt);
         }
 
-        public int nextInt() throws IOException
-        {
+        public int nextInt() throws IOException {
             int ret = 0;
             byte c = read();
             while (c <= ' ')
@@ -46,18 +41,16 @@ public class Main {
             boolean neg = (c == '-');
             if (neg)
                 c = read();
-            do
-            {
+            do {
                 ret = ret * 10 + c - '0';
-            }  while ((c = read()) >= '0' && c <= '9');
+            } while ((c = read()) >= '0' && c <= '9');
 
             if (neg)
                 return -ret;
             return ret;
         }
 
-        public long nextLong() throws IOException
-        {
+        public long nextLong() throws IOException {
             long ret = 0;
             byte c = read();
             while (c <= ' ')
@@ -74,8 +67,7 @@ public class Main {
             return ret;
         }
 
-        public double nextDouble() throws IOException
-        {
+        public double nextDouble() throws IOException {
             double ret = 0, div = 1;
             byte c = read();
             while (c <= ' ')
@@ -89,10 +81,8 @@ public class Main {
             }
             while ((c = read()) >= '0' && c <= '9');
 
-            if (c == '.')
-            {
-                while ((c = read()) >= '0' && c <= '9')
-                {
+            if (c == '.') {
+                while ((c = read()) >= '0' && c <= '9') {
                     ret += (c - '0') / (div *= 10);
                 }
             }
@@ -102,133 +92,121 @@ public class Main {
             return ret;
         }
 
-        private void fillBuffer() throws IOException
-        {
+        private void fillBuffer() throws IOException {
             bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
             if (bytesRead == -1)
                 buffer[0] = -1;
         }
 
-        private byte read() throws IOException
-        {
+        private byte read() throws IOException {
             if (bufferPointer == bytesRead)
                 fillBuffer();
             return buffer[bufferPointer++];
         }
 
-        public void close() throws IOException
-        {
+        public void close() throws IOException {
             if (din == null)
                 return;
             din.close();
         }
     }
 
-
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static FastReader f = new FastReader();
     static StringTokenizer st;
     static StringBuilder sb = new StringBuilder("");
-    private static int m = (int)1e9 + 7;
+    private static int m = (int) 1e9 + 7;
     static int MAX = 500005;
 
-    static int[] inputArray(int n) throws IOException {
-        int[] a = new int[n];
-        for(int i = 0 ; i < n ; i++) {
-            a[i] = f.nextInt();
-        }
-        return a;
-    }
-
-    static int gcd(int a , int b) {
-        if(a % b == 0) {
+    static int gcd(int a, int b) {
+        if (a % b == 0) {
             return b;
         }
-        return gcd(b , a % b);
+        return gcd(b, a % b);
     }
 
 
     static long moduloInversePrime(long a) {
-        long ans = modPow(a , m - 2);
+        long ans = modPow(a, m - 2);
         //System.out.println("modulo inverse of " + a + " -> " + ans);
         return ans;
     }
 
-    static long mult(long a, long b)
-    {
-        return (a * (long)b % m);
+    static long mult(long a, long b) {
+        return (a * (long) b % m);
     }
 
-    static long modPow(long a, int step)
-    {
+    static long modPow(long a, int step) {
         long ans = 1;
-        while(step != 0)
-        {
-            if((step & 1) != 0)
-                ans = mult(ans , a);
-            a = mult(a , a);
+        while (step != 0) {
+            if ((step & 1) != 0)
+                ans = mult(ans, a);
+            a = mult(a, a);
             step >>= 1;
         }
         return ans;
     }
 
-    static long longModulus(long x , long m) {
+    static long longModulus(long x, long m) {
         long d = x / m;
         return x - d * m;
     }
 
-    static boolean isTriangle(int a , int b , int c) {
-        return a + b > c && a + c > b && c + b > a;
+    static int[] inputArray(int n) throws IOException {
+        int[] a = new int[n];
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < n; i++) {
+            a[i] = Integer.parseInt(st.nextToken());
+        }
+        return a;
     }
 
-    private static void swap(int arr[] , int i , int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
+    static int dp[][];
 
     public static void main(String[] args) throws IOException {
         int n = f.nextInt();
-        int[][] compat = new int[n][n];
+        int[][] cost = new int[n][n];
         for(int i = 0 ; i < n ; i++) {
             for(int j = 0 ; j < n ; j++) {
-                compat[i][j] = f.nextInt();
+                cost[i][j] = f.nextInt();
             }
         }
-        long[][] dp = new long[n][1<<n];
-        for(int i = 0 ;i  < n ; i++) {
+        dp = new int[n][1<<n];
+        for(int i = 0 ; i < n; i++) {
             Arrays.fill(dp[i] , -1);
         }
-        System.out.println(code(compat , n , dp ,0 , (1<<n) - 1));
+        System.out.println(solve(cost , n , 0 , (1<<n) - 1));
     }
 
-    private static long code(int[][] compat, int n, long[][] dp , int i, int mask) {
-        //System.out.println("i - " + i + " mask - " + Integer.toBinaryString(mask));
-        if(i == n) {
-            return 1;
+    private static int solve(int[][] cost, int n , int ind , int mask) {
+        //System.out.println("ind: " + ind + " mask: " + Integer.toBinaryString(mask));
+        if(ind == n) {
+            return 0;
         }
-        if(dp[i][mask] != -1) {
-            return dp[i][mask];
+        if(dp[ind][mask] != -1) {
+            return dp[ind][mask];
         }
-        long res = 0;
+        int res = Integer.MAX_VALUE;
         for(int j = 0 ; j < n ; j++) {
-            //System.out.println("j - " + j + " compat[i][j] - " + compat[i][j]);
-             if((compat[i][j] != 0) && (mask & (1<<j)) != 0) {
-                 //System.out.println("new mask - " + "(" + mask + " ^ (" + (1<<j) + ") = " + (mask ^ (1<<j)));
-                 long tempRes = code(compat , n , dp , i + 1 , mask ^ (1<<j));
-                 res = (res + tempRes) % m;
-                 //System.out.println("i - " + i + " j - " + j + " tempRes - " + tempRes);
+            if((mask & (1<<j)) != 0) {
+                int tempRes = cost[ind][j] + solve(cost , n , ind + 1 , mask ^ (1 << j));
+                //System.out.println("j - " + j + " tempRes - " + tempRes);
+                res = Math.min(res , tempRes);
             }
         }
-        dp[i][mask] = res;
+        //System.out.println("ind: " + ind + " mask: " + Integer.toBinaryString(mask) + " ka res - " + res);
+        dp[ind][mask] = res;
         return res;
     }
-
 }
+
 /*
+
 4
-0 1 0 0
-0 0 0 1
-1 0 0 0
-0 0 1 0
+9 2 7 8
+6 4 3 7
+5 8 1 8
+7 6 9 4
+
 
  */
