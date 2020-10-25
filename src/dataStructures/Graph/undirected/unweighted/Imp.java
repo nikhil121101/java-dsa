@@ -192,21 +192,22 @@ public class Imp {
 	}
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		int n = Integer.parseInt(br.readLine());
-		intialize(n);
-		for(int i = 0 ; i < n-1 ; i++) {
-			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken()) - 1;
-			int v = Integer.parseInt(st.nextToken()) - 1;
-			addEdge(u , v);
-		}
-		//System.out.println(adjList);
-		st = new StringTokenizer(br.readLine());
-		int n1 = Integer.parseInt(st.nextToken()) - 1;
-		int n2 = Integer.parseInt(st.nextToken()) - 1;
-		System.out.println(LowestCommonAncestor(n1 , n2) + 1);
+//		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//		StringTokenizer st;
+//		int n = Integer.parseInt(br.readLine());
+//		intialize(n);
+//		for(int i = 0 ; i < n-1 ; i++) {
+//			st = new StringTokenizer(br.readLine());
+//			int u = Integer.parseInt(st.nextToken()) - 1;
+//			int v = Integer.parseInt(st.nextToken()) - 1;
+//			addEdge(u , v);
+//		}
+//		//System.out.println(adjList);
+//		st = new StringTokenizer(br.readLine());
+//		int n1 = Integer.parseInt(st.nextToken()) - 1;
+//		int n2 = Integer.parseInt(st.nextToken()) - 1;
+//		System.out.println(LowestCommonAncestor(n1 , n2) + 1);
+		System.out.println(Math.exp(-6) - Math.exp(-4) + Math.exp(-3) - Math.exp(-5));
 	}
 }
 

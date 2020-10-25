@@ -3,133 +3,56 @@ import java.util.*;
 
 public class Main {
 
-    static class FastReader
-    {
-        final private int BUFFER_SIZE = 1 << 16;
-        private DataInputStream din;
-        private byte[] buffer;
-        private int bufferPointer, bytesRead;
+    public static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
 
-        public FastReader()
-        {
-            din = new DataInputStream(System.in);
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public FastReader(String file_name) throws IOException
-        {
-            din = new DataInputStream(new FileInputStream(file_name));
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public String readLine() throws IOException
-        {
-            byte[] buf = new byte[64]; // line length
-            int cnt = 0, c;
-            while ((c = read()) != -1)
-            {
-                if (c == '\n')
-                    break;
-                buf[cnt++] = (byte) c;
+        public FastReader(String s) {
+            try {
+                br = new BufferedReader(new FileReader(s));
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            return new String(buf, 0, cnt);
         }
 
-        public int nextInt() throws IOException
-        {
-            int ret = 0;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-            do
-            {
-                ret = ret * 10 + c - '0';
-            }  while ((c = read()) >= '0' && c <= '9');
-
-            if (neg)
-                return -ret;
-            return ret;
+        public FastReader() {
+            br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        public long nextLong() throws IOException
-        {
-            long ret = 0;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-            do {
-                ret = ret * 10 + c - '0';
-            }
-            while ((c = read()) >= '0' && c <= '9');
-            if (neg)
-                return -ret;
-            return ret;
-        }
-
-        public double nextDouble() throws IOException
-        {
-            double ret = 0, div = 1;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-
-            do {
-                ret = ret * 10 + c - '0';
-            }
-            while ((c = read()) >= '0' && c <= '9');
-
-            if (c == '.')
-            {
-                while ((c = read()) >= '0' && c <= '9')
-                {
-                    ret += (c - '0') / (div *= 10);
+        String nextToken() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
-
-            if (neg)
-                return -ret;
-            return ret;
+            return st.nextToken();
         }
 
-        private void fillBuffer() throws IOException
-        {
-            bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
-            if (bytesRead == -1)
-                buffer[0] = -1;
+        int nextInt() {
+            return Integer.parseInt(nextToken());
         }
 
-        private byte read() throws IOException
-        {
-            if (bufferPointer == bytesRead)
-                fillBuffer();
-            return buffer[bufferPointer++];
+        long nextLong() {
+            return Long.parseLong(nextToken());
         }
 
-        public void close() throws IOException
-        {
-            if (din == null)
-                return;
-            din.close();
+        double nextDouble() {
+            return Double.parseDouble(nextToken());
         }
     }
 
 
     static FastReader f = new FastReader();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
     static StringBuilder sb = new StringBuilder("");
     private static int m = (int)1e9 + 7;
     static int MAX = 500005;
+    static long[] fact;
 
     static int[] inputArray(int n) throws IOException {
         int[] a = new int[n];
@@ -144,13 +67,6 @@ public class Main {
             return b;
         }
         return gcd(b , a % b);
-    }
-
-
-    static long moduloInversePrime(long a) {
-        long ans = modPow(a , m - 2);
-        //System.out.println("modulo inverse of " + a + " -> " + ans);
-        return ans;
     }
 
     static long mult(long a, long b)
@@ -176,59 +92,82 @@ public class Main {
         return x - d * m;
     }
 
-    static boolean isTriangle(int a , int b , int c) {
-        return a + b > c && a + c > b && c + b > a;
-    }
-
-    private static void swap(int arr[] , int i , int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
     public static void main(String[] args) throws IOException {
         int n = f.nextInt();
-        int[][] compat = new int[n][n];
-        for(int i = 0 ; i < n ; i++) {
-            for(int j = 0 ; j < n ; j++) {
-                compat[i][j] = f.nextInt();
-            }
+        ArrayList<ArrayList<Integer>> tree = new ArrayList<>();
+        for(int i =0 ; i < n ; i++) {
+            tree.add(new ArrayList<Integer>());
         }
-        long[][] dp = new long[n][1<<n];
-        for(int i = 0 ;i  < n ; i++) {
-            Arrays.fill(dp[i] , -1);
+        for(int i = 1 ; i < n ; i++) {
+            int pi = f.nextInt() - 1;
+            tree.get(pi).add(i);
         }
-        System.out.println(code(compat , n , dp ,0 , (1<<n) - 1));
+        //System.out.println(tree);
+        int[] pop = new int[n];
+        for(int i =0 ; i < n ; i++) {
+            pop[i] = f.nextInt();
+        }
+        long[] size = new long[n];
+        int[] leaves = new int[n];
+        int[] maxLeaf = new int[n];
+        calcSize(tree , n , pop , size , leaves , maxLeaf , 0);
+//        System.out.println(Arrays.toString(size));
+//        System.out.println(Arrays.toString(leaves));
+//        System.out.println(Arrays.toString(maxLeaf));
+        System.out.println(attack(tree , n , size , leaves , maxLeaf , pop , 0 , 0));
     }
 
-    private static long code(int[][] compat, int n, long[][] dp , int i, int mask) {
-        //System.out.println("i - " + i + " mask - " + Integer.toBinaryString(mask));
-        if(i == n) {
-            return 1;
+
+    private static long attack(ArrayList<ArrayList<Integer>> tree, int n, long[] size,
+                               int[] leaves , int[] maxLeaf , int[] pop, int i , int extra) {
+        //System.out.println("i - " + i + " extra - " + extra);
+        if(tree.get(i).isEmpty()) {
+            return extra + pop[i];
         }
-        if(dp[i][mask] != -1) {
-            return dp[i][mask];
-        }
-        long res = 0;
-        for(int j = 0 ; j < n ; j++) {
-            //System.out.println("j - " + j + " compat[i][j] - " + compat[i][j]);
-             if((compat[i][j] != 0) && (mask & (1<<j)) != 0) {
-                 //System.out.println("new mask - " + "(" + mask + " ^ (" + (1<<j) + ") = " + (mask ^ (1<<j)));
-                 long tempRes = code(compat , n , dp , i + 1 , mask ^ (1<<j));
-                 res = (res + tempRes) % m;
-                 //System.out.println("i - " + i + " j - " + j + " tempRes - " + tempRes);
+        long max = Integer.MIN_VALUE;
+        int maxInd = 0;
+        for(int x : tree.get(i)) {
+            if(size[x] > max) {
+                max = maxLeaf[x];
+                maxInd = x;
             }
         }
-        dp[i][mask] = res;
-        return res;
+        //System.out.println("max - " + max + " ind = " + maxInd);
+        long emptySpace = max * leaves[i] - size[i];
+        //System.out.println("emptySpace - " + emptySpace);
+        if(emptySpace < pop[i]) {
+            extra += Math.ceil((pop[i] - emptySpace) / (double)leaves[i]) ;
+        }
+        return attack(tree , n , size , leaves , maxLeaf , pop , maxInd , extra);
     }
+
+    private static void calcSize(ArrayList<ArrayList<Integer>> tree,
+                                 int n, int[] pop , long[] size ,
+                                 int[] leaves , int[] maxLeaf, int src) {
+
+        if(tree.get(src).isEmpty()) {
+            size[src] = pop[src];
+            leaves[src] = 1;
+            maxLeaf[src] = pop[src];
+        }
+        for(int x : tree.get(src)) {
+            calcSize(tree , n , pop , size , leaves , maxLeaf , x);
+            size[src] += size[x];
+            leaves[src] += leaves[x];
+            maxLeaf[src] = Math.max(maxLeaf[src] , maxLeaf[x]);
+        }
+    }
+
+
+
 
 }
 /*
-4
-0 1 0 0
-0 0 0 1
-1 0 0 0
-0 0 1 0
 
- */
+2 3 3
+1 1 1
+3 2 0
+2 1 1 2 2
+0 2 1 4 5
+5 1 1 5 5
+*/
