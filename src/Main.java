@@ -193,44 +193,43 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        int n = f.nextInt();
-        int a[] = inputArray(n);
-        Arrays.sort(a);
-        //System.out.println(a);
-        int max = a[n-1];
-        boolean[] seive = new boolean[max + 1];
-        Arrays.fill(seive , true);
-        TreeSet<Integer> set = new TreeSet<>();
-        int[] freq = new int[(int) 1e6 + 1];
-        for(int t : a) {
-            set.add(t);
-            freq[t]++;
-        }
-        //System.out.println(Arrays.toString(a));
-        //System.out.println(set);
+        int n = f.nextInt() , k = f.nextInt();
+        int[] p = inputArray(n) , c = inputArray(n);
         for(int i = 0 ; i < n ; i++) {
-            if(freq[a[i]] > 1) {
-                seive[i] = false;
-            }
-            for(int j = 2 * a[i] ; j <= max ; j += a[i]) {
-                if(set.contains(j)) {
-                    seive[j] = false;
-                }
-            }
+            p[i]--;
         }
-        //System.out.println(Arrays.toString(seive));
-        int res = 0;
-        for(int i = 0 ; i <= max ; i++) {
-            if(set.contains(i) && seive[i]) {
-                res++;
+        long res = Long.MIN_VALUE;
+        for(int i = 0 ; i < n ; i++) {
+            long[] temp = check(p , c , n , i);
+            long ans = temp[1] * (k / temp[0]);
+            if(k % temp[0] != 0) {
+                ans += move(p , c , n , i , k % temp[0]);
             }
+            res = Math.max(res , ans);
         }
-//        for(boolean b : seive) {
-//            if(b && set.contains()) {
-//                res++;
-//            }
-//        }
         System.out.println(res);
+    }
+
+    private static long move(int[] p, int[] c, int n, int i, long k) {
+        int j = p[i];
+        long cost = 0;
+        while(k-- != 0) {
+            cost += c[j];
+            j = p[j];
+        }
+        return cost;
+    }
+
+    private static long[] check(int[] p, int[] c, int n, int i) {
+        long len = 1;
+        int j = p[i];
+        long cost = c[i];
+        while(j != i) {
+            len++;
+            cost += c[j];
+            j = p[j];
+        }
+        return new long[]{len , cost};
     }
 }
 /*
