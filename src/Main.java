@@ -1,8 +1,8 @@
 import java.io.*;
+import java.math.BigInteger;
 import java.util.*;
 
 public class Main {
-
     public static class FastReader {
         BufferedReader br;
         StringTokenizer st;
@@ -71,7 +71,7 @@ public class Main {
 
     static long mult(long a, long b)
     {
-        return (a * (long)b % m);
+        return (a * b % m);
     }
 
     static long modPow(long a, int step)
@@ -88,86 +88,152 @@ public class Main {
     }
 
     static long longModulus(long x , long m) {
+        if(x < m) {
+            return x;
+        }
         long d = x / m;
         return x - d * m;
     }
 
-    public static void main(String[] args) throws IOException {
-        int n = f.nextInt();
-        ArrayList<ArrayList<Integer>> tree = new ArrayList<>();
-        for(int i =0 ; i < n ; i++) {
-            tree.add(new ArrayList<Integer>());
+    public static void primeFactors(long n , HashMap<Long , Integer> factors)
+    {
+        // Print the number of 2s that divide n
+        while (n%2==0)
+        {
+            if(!factors.containsKey(2L)) {
+                factors.put(2L, 0);
+            }
+            factors.replace(2L , factors.get(2L) + 1);
+            n /= 2;
         }
-        for(int i = 1 ; i < n ; i++) {
-            int pi = f.nextInt() - 1;
-            tree.get(pi).add(i);
-        }
-        //System.out.println(tree);
-        int[] pop = new int[n];
-        for(int i =0 ; i < n ; i++) {
-            pop[i] = f.nextInt();
-        }
-        long[] size = new long[n];
-        int[] leaves = new int[n];
-        int[] maxLeaf = new int[n];
-        calcSize(tree , n , pop , size , leaves , maxLeaf , 0);
-//        System.out.println(Arrays.toString(size));
-//        System.out.println(Arrays.toString(leaves));
-//        System.out.println(Arrays.toString(maxLeaf));
-        System.out.println(attack(tree , n , size , leaves , maxLeaf , pop , 0 , 0));
-    }
 
-
-    private static long attack(ArrayList<ArrayList<Integer>> tree, int n, long[] size,
-                               int[] leaves , int[] maxLeaf , int[] pop, int i , int extra) {
-        //System.out.println("i - " + i + " extra - " + extra);
-        if(tree.get(i).isEmpty()) {
-            return extra + pop[i];
-        }
-        long max = Integer.MIN_VALUE;
-        int maxInd = 0;
-        for(int x : tree.get(i)) {
-            if(size[x] > max) {
-                max = maxLeaf[x];
-                maxInd = x;
+        for (long i = 3; i <= Math.sqrt(n); i+= 2)
+        {
+            while (n%i == 0)
+            {
+                if(!factors.containsKey(i)) {
+                    factors.put(i , 0);
+                }
+                factors.replace(i , factors.get(i) + 1);
+                n /= i;
             }
         }
-        //System.out.println("max - " + max + " ind = " + maxInd);
-        long emptySpace = max * leaves[i] - size[i];
-        //System.out.println("emptySpace - " + emptySpace);
-        if(emptySpace < pop[i]) {
-            extra += Math.ceil((pop[i] - emptySpace) / (double)leaves[i]) ;
+        if (n > 2) {
+            if(!factors.containsKey(n)) {
+                factors.put(n , 0);
+            }
+            factors.replace(n , factors.get(n) + 1);
         }
-        return attack(tree , n , size , leaves , maxLeaf , pop , maxInd , extra);
+
     }
 
-    private static void calcSize(ArrayList<ArrayList<Integer>> tree,
-                                 int n, int[] pop , long[] size ,
-                                 int[] leaves , int[] maxLeaf, int src) {
-
-        if(tree.get(src).isEmpty()) {
-            size[src] = pop[src];
-            leaves[src] = 1;
-            maxLeaf[src] = pop[src];
+    static int lower_bound(int a[] , int val , int low , int high) {
+        int res = high + 1;
+        while(low <= high) {
+            int mid = (low + high) / 2;
+            if(a[mid] >= val) {
+                high = mid - 1;
+                res = mid;
+            }
+            else {
+                low = mid + 1;
+            }
         }
-        for(int x : tree.get(src)) {
-            calcSize(tree , n , pop , size , leaves , maxLeaf , x);
-            size[src] += size[x];
-            leaves[src] += leaves[x];
-            maxLeaf[src] = Math.max(maxLeaf[src] , maxLeaf[x]);
+        return res;
+    }
+
+    static int upper_bound(int a[] , int val , int low , int high) {
+        int res = high + 1;
+        while(low <= high) {
+            int mid = (low + high) / 2;
+            if(a[mid] > val) {
+                high = mid - 1;
+                res = mid;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+        return res;
+    }
+
+    static boolean[] sieveOfEratosthenes(int n)
+    {
+        boolean isPrime[] = new boolean[n+1];
+        Arrays.fill(isPrime , true);
+        isPrime[0] = false;
+        isPrime[1] = false;
+        for(int i = 2; i * i <= n ; i++)
+        {
+            for(int j = 2 * i ; j <= n; j += i)
+                isPrime[j] = false;
+        }
+        return isPrime;
+    }
+
+    static char val(int x) {
+        //x == 0  ? 'z' :
+        return (char)(x + 'a');
+    }
+
+    static void addToMap(Map<Integer , Integer> map , int x , int fr) {
+        if(map.containsKey(x)) {
+            map.replace(x , map.get(x) + fr);
+        }
+        else {
+            map.put(x , fr);
         }
     }
 
+    static void removeFromMap(Map<Integer , Integer> map , int x) {
+        map.replace(x , map.get(x) - 1);
+        if(map.get(x) == 0) {
+            map.remove(x);
+        }
+    }
 
-
-
+    public static void main(String[] args) throws IOException {
+        int n = f.nextInt();
+        int a[] = inputArray(n);
+        Arrays.sort(a);
+        //System.out.println(a);
+        int max = a[n-1];
+        boolean[] seive = new boolean[max + 1];
+        Arrays.fill(seive , true);
+        TreeSet<Integer> set = new TreeSet<>();
+        int[] freq = new int[(int) 1e6 + 1];
+        for(int t : a) {
+            set.add(t);
+            freq[t]++;
+        }
+        //System.out.println(Arrays.toString(a));
+        //System.out.println(set);
+        for(int i = 0 ; i < n ; i++) {
+            if(freq[a[i]] > 1) {
+                seive[i] = false;
+            }
+            for(int j = 2 * a[i] ; j <= max ; j += a[i]) {
+                if(set.contains(j)) {
+                    seive[j] = false;
+                }
+            }
+        }
+        //System.out.println(Arrays.toString(seive));
+        int res = 0;
+        for(int i = 0 ; i <= max ; i++) {
+            if(set.contains(i) && seive[i]) {
+                res++;
+            }
+        }
+//        for(boolean b : seive) {
+//            if(b && set.contains()) {
+//                res++;
+//            }
+//        }
+        System.out.println(res);
+    }
 }
 /*
-
-2 3 3
-1 1 1
-3 2 0
-2 1 1 2 2
-0 2 1 4 5
-5 1 1 5 5
-*/
+5
+1 2 3 4 5 6 7 8 9 10
+ */

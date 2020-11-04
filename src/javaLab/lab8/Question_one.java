@@ -18,8 +18,8 @@ public class Question_one {
         BufferedReader br1 = new BufferedReader(new FileReader(new File(args[0])));
         BufferedReader br2 = new BufferedReader(new FileReader(new File(args[1])));
         int i = 1;
-        Map<String , ArrayList<Integer>> wordsInFileOne = new HashMap<>();
-        Map<String , ArrayList<Integer>> wordsInFileTwo = new HashMap<>();
+        Map<String , HashSet<Integer>> wordsInFileOne = new HashMap<>();
+        Map<String , HashSet<Integer>> wordsInFileTwo = new HashMap<>();
 
         while(true) {
             String line = br1.readLine();
@@ -27,11 +27,13 @@ public class Question_one {
             if(line == null || line.equals("")) {
                 break;
             }
+            System.out.println("i - " + i);
+            System.out.println(line);
             StringTokenizer st1 = new StringTokenizer(line);
             while(st1.hasMoreElements()) {
                 String word = st1.nextToken();
                 if (!wordsInFileOne.containsKey(word)) {
-                    wordsInFileOne.put(word, new ArrayList<>());
+                    wordsInFileOne.put(word, new HashSet<>());
                 }
                 wordsInFileOne.get(word).add(i);
             }
@@ -44,18 +46,20 @@ public class Question_one {
             if(line == null || line.equals("")) {
                 break;
             }
+            System.out.println("i - " + i);
+            System.out.println(line);
             StringTokenizer st2 = new StringTokenizer(line);
             while(st2.hasMoreElements()) {
                 String word = st2.nextToken();
                 if (!wordsInFileTwo.containsKey(word)) {
-                    wordsInFileTwo.put(word, new ArrayList<>());
+                    wordsInFileTwo.put(word, new HashSet<>());
                 }
                 wordsInFileTwo.get(word).add(i);
             }
             i++;
         }
-        for(Map.Entry<String , ArrayList<Integer>> c1 : wordsInFileOne.entrySet()) {
-            for(Map.Entry<String , ArrayList<Integer>> c2 : wordsInFileTwo.entrySet()) {
+        for(Map.Entry<String , HashSet<Integer>> c1 : wordsInFileOne.entrySet()) {
+            for(Map.Entry<String , HashSet<Integer>> c2 : wordsInFileTwo.entrySet()) {
                 if(c1.getKey().equals(c2.getKey())) {
                     System.out.print(c1.getKey() + ": length " + c1.getKey().length() + ", appeared in ");
                     for(int j : c1.getValue()) {

@@ -24,6 +24,14 @@ public class WtdUndirGraph {
 	static int n;
 	static Edge[] edges;
 	static int[] parent , rank;
+
+	static void initializeDSU() {
+		parent = new int[n];
+		for(int i = 0 ; i < n ; i++) {
+			parent[i] = i;
+		}
+		rank = new int[n];
+	}
 	public static void main(String args[]) throws IOException {
 		int res = 0;
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -50,12 +58,8 @@ public class WtdUndirGraph {
 				edges[e++] = new Edge(i , j , weight);
 			}
 		}
+		initializeDSU();
 		Arrays.sort(edges , new Edge());
-		parent = new int[n];
-		for(int i = 0 ; i < n ; i++) {
-			parent[i] = i;
-		}
-		rank = new int[n];
 		for(int i = 0 ; i < edgesCount ; i++) {
 			int p1 = find(edges[i].u);
 			int p2 = find(edges[i].v);

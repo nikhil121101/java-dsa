@@ -140,7 +140,7 @@ public class Template {
         for(int i = 2; i * i <= n ; i++)
         {
             for(int j = 2 * i ; j <= n; j += i)
-                isPrime[i] = false;
+                isPrime[j] = false;
         }
         return isPrime;
     }
@@ -236,18 +236,48 @@ public class Template {
         return endIndex;
     }
 
+    static int lower_bound(int a[] , int val , int low , int high) {
+        int res = high + 1;
+        while(low <= high) {
+            int mid = (low + high) / 2;
+            if(a[mid] >= val) {
+                high = mid - 1;
+                res = mid;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+        return res;
+    }
+
+    static int upper_bound(int a[] , int val , int low , int high) {
+        int res = high + 1;
+        while(low <= high) {
+            int mid = (low + high) / 2;
+            if(a[mid] > val) {
+                high = mid - 1;
+                res = mid;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+        return res;
+    }
+
+    static int[] equal_range(int a[] , int val , int low , int high) {
+        return new int[]{lower_bound(a , val , low , high) , upper_bound(a , val , low , high) -1};
+    }
 
     public static void main(String[] args) throws IOException {
-        PriorityQueue<Integer> pq = new PriorityQueue<Integer>();
-        pq.add(1);
-        pq.add(3);
-        pq.add(5);pq.add(2);
-        pq.add(2);
-        pq.add(2);
-        pq.add(3);
-        System.out.println(pq);
-        pq.remove(2);
-        System.out.println(pq);
+        int a[] = new int[]{1 ,4 ,3 ,6 ,3 , 3 , 4, 6 , 2};
+        Arrays.sort(a);
+        System.out.println(Arrays.toString(a));
+        int i= 7;
+        System.out.println(lower_bound(a , i , 0 , a.length - 1));
+        System.out.println(upper_bound(a , i , 0 , a.length - 1));
+        System.out.println(Arrays.toString(equal_range(a, i, 0, a.length - 1)));
     }
 
 

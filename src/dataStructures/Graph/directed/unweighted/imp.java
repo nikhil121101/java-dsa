@@ -1,26 +1,27 @@
 package dataStructures.Graph.directed.unweighted;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
-class dirUnwtdGraph {
-    int V;
-    HashMap<Integer , ArrayList<Integer>> adjList;
-    dirUnwtdGraph(int V) {
-        this.V = V;
-        adjList = new HashMap<Integer , ArrayList<Integer>>();
-        for (int i = 0; i < V; i++) {
-            adjList.put(i , new ArrayList<Integer>());
+public class imp {
+
+    static int n;
+    static ArrayList<ArrayList<Integer>> adjList;
+
+    static void init(int n) {
+        adjList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adjList.add(new ArrayList<Integer>());
         }
     }
-    void addEdge(int u, int v) {
+
+    static void addEdge(int u, int v) {
         adjList.get(u).add(v);
     }
-    void printGraph() {
+
+    static void printGraph() {
         System.out.println("graph veteces - >");
-        for (int i = 0; i < V; i++) {
+        for (int i = 0; i < n; i++) {
             for (int x : adjList.get(i)) {
                 System.out.print((i+1) + "-" + (x+1) + " , ");
             }
@@ -28,8 +29,8 @@ class dirUnwtdGraph {
         System.out.println();
     }
 
-    void bfs(int s , int[] a , int at) {
-        boolean[] visited = new boolean[V];
+    static void bfs(int s , int[] a , int at) {
+        boolean[] visited = new boolean[n];
         Queue<Integer> queue = new LinkedList<Integer>();
         queue.add(s);
         visited[s] = true;
@@ -46,37 +47,60 @@ class dirUnwtdGraph {
         System.out.println();
     }
 
-    void dfs(int s , int[] a , int[] at , boolean[] visted) {
-        visted[s] = true;
+    static Set<Set<Integer>> stronglyConnectedComp() {
+        Set<Set<Integer>> res = new HashSet<>();
+        boolean[] visited = new boolean[n];
+        Stack<Integer> stack = new Stack<>();
+        for(int i = 0; i < n; i++) {
+            if(!visited[i]) {
+                dfs(i , visited , stack);
+            }
+        }
+        Arrays.fill(visited , false);
+        ArrayList<ArrayList<Integer>> transposeList = transpose();
+        for(int i = 0; i < n; i++) {
+            if(!visited[i]) {
+                HashSet<Integer> set = new HashSet<>();
+                dfs2(i , visited , set);
+                res.add(set);
+            }
+        }
+        return res;
+    }
+
+    private static ArrayList<ArrayList<Integer>> transpose() {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            res.add(new ArrayList<>());
+        }
+        for(int i = 0; i < n; i++) {
+            for(int j = 0 ; j < adjList.get(i).size() ; j++) {
+                res.get(adjList.get(i).get(j)).add(i);
+            }
+        }
+        return res;
+    }
+
+    static void dfs(int s , boolean[] visited , Stack<Integer> stack) {
+        visited[s] = true;
         for(int x : adjList.get(s)) {
-            if(!visted[x])
-                dfs(x , a , at , visted);
+            if(!visited[x])
+                dfs(x , visited , stack);
         }
-        a[at[0]] = s+1;
-        at[0]--;
+        stack.push(s);
     }
-}
+    static void dfs2(int s , boolean[] visited , Set<Integer> set) {
+        visited[s] = true;
+        set.add(s);
+        for(int x : adjList.get(s)) {
+            if(!visited[x])
+                dfs2(x , visited , set);
+        }
+    }
 
-public class imp {
     public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        String[] s = bf.readLine().split(" ");
-        int n = Integer.parseInt(s[0]);
-        int m = Integer.parseInt(s[1]);
-        dirUnwtdGraph g = new dirUnwtdGraph(n);
-        for(int i = 0 ; i < m ; i++) {
-            s = bf.readLine().split(" ");
-            int u = Integer.parseInt(s[0]) - 1;
-            int v = Integer.parseInt(s[1]) - 1;
-            g.addEdge(u , v);
-        }
-        g.printGraph();
-        int[] a = new int[n];
-        int[] at = new int[]{n-1};
-        g.dfs(0 , a , at , new boolean[n]);
-        System.out.println(Arrays.toString(a));
-    }
 
+    }
 }
 /*
 8 9

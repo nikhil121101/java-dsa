@@ -2,182 +2,129 @@ import java.io.*;
 import java.util.*;
 public class Codeforces {
 
-    static class FastReader
-    {
-        final private int BUFFER_SIZE = 1 << 16;
-        private DataInputStream din;
-        private byte[] buffer;
-        private int bufferPointer, bytesRead;
+    public static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
 
-        public FastReader()
-        {
-            din = new DataInputStream(System.in);
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public FastReader(String file_name) throws IOException
-        {
-            din = new DataInputStream(new FileInputStream(file_name));
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public String readLine() throws IOException
-        {
-            byte[] buf = new byte[64]; // line length
-            int cnt = 0, c;
-            while ((c = read()) != -1)
-            {
-                if (c == '\n')
-                    break;
-                buf[cnt++] = (byte) c;
+        public FastReader(String s) {
+            try {
+                br = new BufferedReader(new FileReader(s));
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            return new String(buf, 0, cnt);
         }
 
-        public int nextInt() throws IOException
-        {
-            int ret = 0;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-            do
-            {
-                ret = ret * 10 + c - '0';
-            }  while ((c = read()) >= '0' && c <= '9');
-
-            if (neg)
-                return -ret;
-            return ret;
+        public FastReader() {
+            br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        public long nextLong() throws IOException
-        {
-            long ret = 0;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-            do {
-                ret = ret * 10 + c - '0';
-            }
-            while ((c = read()) >= '0' && c <= '9');
-            if (neg)
-                return -ret;
-            return ret;
-        }
-
-        public double nextDouble() throws IOException
-        {
-            double ret = 0, div = 1;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-
-            do {
-                ret = ret * 10 + c - '0';
-            }
-            while ((c = read()) >= '0' && c <= '9');
-
-            if (c == '.')
-            {
-                while ((c = read()) >= '0' && c <= '9')
-                {
-                    ret += (c - '0') / (div *= 10);
+        String nextToken() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
-
-            if (neg)
-                return -ret;
-            return ret;
+            return st.nextToken();
         }
 
-        private void fillBuffer() throws IOException
-        {
-            bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
-            if (bytesRead == -1)
-                buffer[0] = -1;
+        int nextInt() {
+            return Integer.parseInt(nextToken());
         }
 
-        private byte read() throws IOException
-        {
-            if (bufferPointer == bytesRead)
-                fillBuffer();
-            return buffer[bufferPointer++];
+        long nextLong() {
+            return Long.parseLong(nextToken());
         }
 
-        public void close() throws IOException
-        {
-            if (din == null)
-                return;
-            din.close();
+        double nextDouble() {
+            return Double.parseDouble(nextToken());
         }
+    }
+
+
+    static FastReader f = new FastReader();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
+    static StringBuilder sb = new StringBuilder("");
+    private static int m = (int)1e9 + 7;
+    static int MAX = 500005;
+    static long[] fact;
+
+    static int[] inputArray(int n) throws IOException {
+        int[] a = new int[n];
+        for(int i = 0 ; i < n ; i++) {
+            a[i] = f.nextInt();
+        }
+        return a;
     }
 
     public static void main(String[] args) throws IOException {
-        FastReader f = new FastReader();
-        int n = f.nextInt() , m = f.nextInt() , K = f.nextInt();
-        char a[][] = new char[n][m];
-        int tot = 0;
-        for(int i =0 ; i < n ; i++) {
-            String s = f.readLine();
-            for(int j = 0 ; j < m ; j++) {
-                a[i][j] = s.charAt(j);
-                if(s.charAt(j) == '#') {
-                    tot++;
-                }
-            }
+        int n = f.nextInt() , x = f.nextInt();
+        long a[] = new long[n];
+        for(int i = 0; i < n ; i++) {
+            a[i] = f.nextLong();
         }
-        int ans = 0;
-        for(int i = 0 ; i < n ; i++) {
-            for(int j = 0 ; j < m ; j++) {
-                int cur = 0;
-                for(int k = 0 ; k < n ; k++) {
-                    if(a[k][j] == '#') {
-                        cur++;
-                    }
-                }
-                for(int k = 0 ; k < m ; k++) {
-                    if(a[i][k] == '#' && k != j) {
-                        cur++;
-                    }
-                }
-                if(tot-cur == K) {
-                    ans++;
-                }
-            }
-        }
-        System.out.println(ans);
+        System.out.println(Code(a , n , x));
     }
 
-    private static int solve(int[] a, int[][] dp , int n, int i, int flag) {
-        if(i < 0) {
-            return 0;
+    static long[] maxSumSubArray(long a[] , int n) {
+        long[] res = new long[3];
+        res[1] = -1;
+        res[2] = 0;
+        int start = 0;
+        long s = 0;
+        for(int i = 0 ; i < n ; i++) {
+            s += a[i];
+            if(s < 0) {
+                start = i + 1;
+                s = 0;
+            }
+            if(s > res[2]) {
+                res[0] = start;
+                res[1] = i;
+                res[2] = s;
+            }
         }
-        if(dp[i][flag] != -1) {
-            return dp[i][flag];
+        return res;
+    }
+
+    static long[] minSumSubArray(long a[] , int n) {
+        long[] res = new long[3];
+        res[1] = -1;
+        int start = 0;
+        long s = 0;
+        for(int i = 0 ; i < n ; i++) {
+            s += a[i];
+            if(s > 0) {
+                start = i + 1;
+                s = 0;
+            }
+            if(s < res[2]) {
+                res[0] = start;
+                res[1] = i;
+                res[2] = s;
+            }
         }
-        int res = 0;
-        if(a[i] == 1) {
-            if(flag > 0)
-                res = Math.min(1 + solve(a , dp , n , i - 1 , flag) , 1 + solve(a , dp , n , i , flag - 1));
-            else
-                res =  solve(a , dp , n , i - 1 , 0);
+        return res;
+    }
+
+    private static long Code(long a[] , int n , int x) {
+        if(x <= 0) {
+            long[] min = minSumSubArray(a , n);
+            for(int i = (int) min[0]; i <= min[1] ; i++) {
+                a[i] *= x;
+            }
         }
         else {
-            res = solve(a , dp , n , i - 1 , flag + 1);
+            long[] max = maxSumSubArray(a , n);
+            for(int i = (int) max[0]; i <= max[1] ; i++) {
+                a[i] *= x;
+            }
         }
-        dp[i][flag] = res;
-        return res;
+        return maxSumSubArray(a , n)[2];
     }
 }
 /*
