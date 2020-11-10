@@ -1,5 +1,4 @@
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 
 public class Main {
@@ -50,7 +49,7 @@ public class Main {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
     static StringBuilder sb = new StringBuilder("");
-    private static int m = (int)1e9 + 7;
+    private static int mod = (int)1e9 + 7;
     static int MAX = 500005;
     static long[] fact;
 
@@ -69,9 +68,21 @@ public class Main {
         return gcd(b , a % b);
     }
 
+    static void initializeFact() {
+        fact = new long[MAX];
+        for(int i = 0 ; i < fact.length ; i++) {
+            if(i == 0) {
+                fact[i] = 1;
+            }
+            else {
+                fact[i] = fact[i-1] * i % mod;
+            }
+        }
+    }
+
     static long mult(long a, long b)
     {
-        return (a * b % m);
+        return (a * b % mod);
     }
 
     static long modPow(long a, int step)
@@ -192,47 +203,20 @@ public class Main {
         }
     }
 
+    static String currentDirectory = "C:\\Users\\ANSHIKA\\IdeaProjects\\java dsa\\src\\javaLab\\lab11";
+
     public static void main(String[] args) throws IOException {
-        int n = f.nextInt() , k = f.nextInt();
-        int[] p = inputArray(n) , c = inputArray(n);
-        for(int i = 0 ; i < n ; i++) {
-            p[i]--;
-        }
-        long res = Long.MIN_VALUE;
-        for(int i = 0 ; i < n ; i++) {
-            long[] temp = check(p , c , n , i);
-            long ans = temp[1] * (k / temp[0]);
-            if(k % temp[0] != 0) {
-                ans += move(p , c , n , i , k % temp[0]);
-            }
-            res = Math.max(res , ans);
-        }
-        System.out.println(res);
-    }
-
-    private static long move(int[] p, int[] c, int n, int i, long k) {
-        int j = p[i];
-        long cost = 0;
-        while(k-- != 0) {
-            cost += c[j];
-            j = p[j];
-        }
-        return cost;
-    }
-
-    private static long[] check(int[] p, int[] c, int n, int i) {
-        long len = 1;
-        int j = p[i];
-        long cost = c[i];
-        while(j != i) {
-            len++;
-            cost += c[j];
-            j = p[j];
-        }
-        return new long[]{len , cost};
+        String path = currentDirectory + "\\" + "abcd.txt";
+        BufferedReader br = new BufferedReader(new FileReader(new File(path)));
+        System.out.println(br.readLine());
     }
 }
 /*
-5
-1 2 3 4 5 6 7 8 9 10
+
+2
+10
+5 2 3 4 5 4 5 6 7 8
+4
+4 4 4 4
+
  */

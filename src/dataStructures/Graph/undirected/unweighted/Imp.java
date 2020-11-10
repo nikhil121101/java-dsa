@@ -58,6 +58,7 @@ public class Imp {
 
 	static FastReader f = new FastReader();
 	static StringBuilder sb = new StringBuilder("");
+	private static long mod = (long)Math.pow(2 , 32);
 
 	static int n , maxN;
 	static ArrayList<HashSet<Integer>> adjList;
@@ -285,64 +286,83 @@ public class Imp {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		int t = f.nextInt();
-		while(t-- != 0) {
-			n = f.nextInt();
-			int q = f.nextInt();
-			initializeGraph();
-			for(int i = 0 ; i < n - 1 ; i++) {
-				int u = f.nextInt() - 1 , v = f.nextInt() - 1;
-				addEdge(u , v);
-				addEdge(v , u);
-			}
-			//System.out.println(adjList);
-			initializeLCE();
-			while(q-- != 0) {
-				int x = f.nextInt() - 1 , y = f.nextInt() - 1;
-				sb.append(solve(y , x)).append("\n");
-			}
+	static int[] inputArray(int n) throws IOException {
+		int[] a = new int[n];
+		for(int i = 0 ; i < n ; i++) {
+			a[i] = f.nextInt();
+		}
+		return a;
+	}
 
+	static long[] square;
+	static HashMap<Pair , Long> res;
+
+	public static void main(String[] args) throws IOException {
+		n = f.nextInt();
+		int q = f.nextInt();
+		int coins[] = inputArray(n);
+		initializeGraph();
+		for(int i = 0 ; i < n - 1 ; i++) {
+			int u = f.nextInt() - 1 , v = f.nextInt() - 1;
+			addEdge(u , v);
+			addEdge(v , u);
+		}
+		//System.out.println(adjList);
+		initializeLCE();
+		setSquare(coins);
+		//System.out.println(Arrays.toString(square));
+		res = new HashMap<>();
+		while(q-- != 0) {
+			int u = f.nextInt() - 1 , v = f.nextInt() - 1;
+			sb.append(Code(u , v , coins)).append("\n");
 		}
 		System.out.print(sb);
 	}
 
-}
+	static long Code(int U , int v , int[] coins) {
+		if(res.containsKey(new Pair(U , v))) {
+			return res.get(new Pair(U , v));
+		}
+		int lce = lowestCommonAncestor(U , v);
+		long s = square[lce];
+		while(U != lce) {
+			s = (s + (coins[U] * coins[v]) % mod) % mod;
+			U = u[U][0];
+			v = u[v][0];
+		}
+		res.put(new Pair(U , v) , s);
+		return s;
+	}
 
-/*
-3
-7
-3 2 3 4
-0
-3 5 6 7
-0
-0
-0
-0
-2
-5 7
-2 7
-11
-2 2 3
-2 7 5
-2 8 10
-1 11
-1 6
-0
-1 4
-1 9
-0
-0
-0
-6
-3 6
-11 3
-7 5
-6 11
-10 6
-6 6
-1
-0
-1
-1 1
- */
+	private static class Pair {
+		int u , v;
+		Pair(int u , int v) {
+			this.u = u;
+			this.v = v;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof Pair)
+				return ((Pair)obj).u == u && ((Pair)obj).v == v;
+			return false;
+		}
+	}
+
+	private static void setSquare(int[] coins) {
+		square = new long[n];
+		dfs(0 , new boolean[n] , coins);
+	}
+
+	private static void dfs(int i , boolean[] visited , int[] coins) {
+		visited[i] = true;
+		square[i] = (square[i] + (coins[i] * coins[i]) % mod) % mod;
+		for(int x : adjList.get(i)) {
+			if(!visited[x]) {
+				square[x] = square[i];
+				dfs(x , visited , coins);
+			}
+		}
+	}
+
+}
