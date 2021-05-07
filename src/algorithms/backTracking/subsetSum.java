@@ -6,35 +6,44 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class subsetSum {
-    static HashSet<Integer> subset = new HashSet<>();
     static List<Set<Integer>> res = new ArrayList<>();
     static int n;
-    static void bruteForce(int[] set , int sum , int at) {
-        if(sum == 0) {
-            res.add(subset);
+    static int[] a;
+
+    static void backtracking(boolean[] set , int i , int s) {
+        //System.out.println(Arrays.toString(set) + " " + i + " " + s);
+        if(s == 0) {
+            HashSet<Integer> tempSet = new HashSet<>();
+            for(int j = 0 ; j < n ; j++) {
+                if(set[j]) {
+                    tempSet.add(j);
+                }
+            }
+            res.add(tempSet);
+            //System.out.println(tempSet);
             return;
         }
-        if(at == n) {
+        if(i == n) {
             return;
         }
-        if(set[at] <= sum) {
-            subset.add(set[at]);
-            bruteForce(set , sum - set[at] , at + 1);
+        if(a[i] <= s) {
+            set[i] = true;
+            backtracking(set , i + 1 , s - a[i]);
+            set[i] = false;
         }
-        subset.remove(set[at]);
-        bruteForce(set , sum , at + 1);
+        backtracking(set , i + 1 , s);
     }
 
     public static void main(String... args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         n = Integer.parseInt(br.readLine());
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int a[] = new int[n];
+        a = new int[n];
         for(int i = 0 ; i < n ; i++) {
             a[i] = Integer.parseInt(st.nextToken());
         }
         int s = Integer.parseInt(br.readLine());
-        bruteForce(a , s , 0);
+        backtracking(new boolean[n] , 0 , s);
         for(Set<Integer> set : res) {
             System.out.println(set);
         }

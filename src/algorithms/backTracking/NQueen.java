@@ -106,7 +106,6 @@ public class NQueen {
         	res.add(temp);
         	return;
 		}
-		boolean solves = false;
 		for(int i = 0 ; i < n ; i++) {
 			if(!is_Attacked(row , i)) {
 				board[row][i] = 1;

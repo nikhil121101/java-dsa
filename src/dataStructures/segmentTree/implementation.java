@@ -16,7 +16,6 @@ public class implementation {
             this.n = n;
             buildTree();
         }
-
         void buildTree() {
             buildTreeHelper(0 , 0 , n-1);
             //System.out.println(Arrays.toString(tree));

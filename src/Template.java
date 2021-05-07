@@ -4,189 +4,158 @@ import java.util.*;
 
 public class Template {
 
-    static class FastReader
-    {
-        final private int BUFFER_SIZE = 1 << 16;
-        private DataInputStream din;
-        private byte[] buffer;
-        private int bufferPointer, bytesRead;
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
 
-        public FastReader()
-        {
-            din = new DataInputStream(System.in);
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public FastReader(String file_name) throws IOException
-        {
-            din = new DataInputStream(new FileInputStream(file_name));
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public String readLine() throws IOException
-        {
-            byte[] buf = new byte[64]; // line length
-            int cnt = 0, c;
-            while ((c = read()) != -1)
-            {
-                if (c == '\n')
-                    break;
-                buf[cnt++] = (byte) c;
+        public FastReader(String s) {
+            try {
+                br = new BufferedReader(new FileReader(s));
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            return new String(buf, 0, cnt);
         }
 
-        public int nextInt() throws IOException
-        {
-            int ret = 0;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-            do
-            {
-                ret = ret * 10 + c - '0';
-            }  while ((c = read()) >= '0' && c <= '9');
-
-            if (neg)
-                return -ret;
-            return ret;
+        public FastReader() {
+            br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        public long nextLong() throws IOException
-        {
-            long ret = 0;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-            do {
-                ret = ret * 10 + c - '0';
-            }
-            while ((c = read()) >= '0' && c <= '9');
-            if (neg)
-                return -ret;
-            return ret;
-        }
-
-        public double nextDouble() throws IOException
-        {
-            double ret = 0, div = 1;
-            byte c = read();
-            while (c <= ' ')
-                c = read();
-            boolean neg = (c == '-');
-            if (neg)
-                c = read();
-
-            do {
-                ret = ret * 10 + c - '0';
-            }
-            while ((c = read()) >= '0' && c <= '9');
-
-            if (c == '.')
-            {
-                while ((c = read()) >= '0' && c <= '9')
-                {
-                    ret += (c - '0') / (div *= 10);
+        String nextToken() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
-
-            if (neg)
-                return -ret;
-            return ret;
+            return st.nextToken();
         }
 
-        private void fillBuffer() throws IOException
-        {
-            bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
-            if (bytesRead == -1)
-                buffer[0] = -1;
+        int nextInt() {
+            return Integer.parseInt(nextToken());
         }
 
-        private byte read() throws IOException
-        {
-            if (bufferPointer == bytesRead)
-                fillBuffer();
-            return buffer[bufferPointer++];
+        String nextLine() throws IOException {
+            return br.readLine();
         }
 
-        public void close() throws IOException
-        {
-            if (din == null)
-                return;
-            din.close();
+        long nextLong() {
+            return Long.parseLong(nextToken());
+        }
+
+        double nextDouble() {
+            return Double.parseDouble(nextToken());
+        }
+
+        float nextFloat() {
+            return Float.parseFloat(nextToken());
         }
     }
 
+
+    static Solution.FastReader f = new Solution.FastReader();
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
-    static StringBuilder sb = new StringBuilder("");
-    private static int m = (int)1e9 + 7;
-    static int MAX = 500005;
+    static StringBuilder sb = new StringBuilder();
+    static long[] fact;
 
-    static boolean[] sieveOfEratosthenes(int n)
-    {
-        boolean isPrime[] = new boolean[n+1];
-        Arrays.fill(isPrime , true);
-        isPrime[0] = false;
-        isPrime[1] = false;
-        for(int i = 2; i * i <= n ; i++)
-        {
-            for(int j = 2 * i ; j <= n; j += i)
-                isPrime[j] = false;
+    static int[] inputArray(int n) throws IOException {
+        int[] a = new int[n];
+        for(int i = 0 ; i < n ; i++) {
+//            a[i] = (int) (Math.random()*1e5 + 1);
+            a[i] = f.nextInt();
         }
-        return isPrime;
+        return a;
     }
 
-    static ArrayList<Set<Integer>> primeFactorization(int n) {
-        ArrayList<Set<Integer>> fact = new ArrayList<Set<Integer>>();
-        for(int i = 0 ; i <= n ; i++) {
-            TreeSet<Integer> set = new TreeSet<Integer>();
-            set.add(1);
-            set.add(i);
-            fact.add(set);
-        }
-        fact.get(1).add(1);
-        for(int i = 2 ; i <= Math.sqrt(n) ; i++) {
-            for(int j = 2*i ; j <= n ; j += i) {
-                fact.get(j).add(i);
+    static void print2DArray(int[][] a) {
+        int n = a.length, m = a[0].length;
+        for(int i = 0 ; i < n ; i++) {
+            for(int j = 0 ; j < m ; j++) {
+                System.out.print(a[i][j] + " ");
             }
+            System.out.println();
         }
-        return fact;
+
     }
 
-    static long modExpo(long x , long y , int mod){
-        long res = 1;
-        for(long i = 0 ; i < y ; i++){
-            res=res*x%mod;
+    static void print2DArray(long[][] a) {
+        int n = a.length, m = a[0].length;
+        for(int i = 0 ; i < n ; i++) {
+            for(int j = 0 ; j < m ; j++) {
+                System.out.print(a[i][j] + " ");
+            }
+            System.out.println();
         }
-        return res;
+
     }
 
-    static int gcd(int a , int b) {
+    static long[] inputLongArray(int n) throws IOException {
+        long[] a = new long[n];
+        for(int i = 0 ; i < n ; i++) {
+            a[i] = f.nextLong();
+//            a[i] = (long) (Math.random() * 1e9 + 1);
+        }
+        return a;
+    }
+
+    static long gcd(long a , long b) {
+        if(a == 0 || b == 0) {
+            return Math.max(a , b);
+        }
+        //System.out.println("a - " + a + " b - " + b);
         if(a % b == 0) {
             return b;
         }
         return gcd(b , a % b);
     }
 
+    static void initializeFact() {
+        fact = new long[MAX_N];
+        for(int i = 0 ; i < fact.length ; i++) {
+            if(i == 0) {
+                fact[i] = 1;
+            }
+            else {
+                fact[i] = fact[i-1] * i % mod;
+            }
+        }
+    }
+
+    static long longModulus(long x , long m) {
+        if(x < m) {
+            return x;
+        }
+        long d = x / m;
+        return x - d * m;
+    }
+
+
+    static BitSet sieveOfEratosthenes(int n)
+    {
+        BitSet isPrime = new BitSet(n+1);
+        isPrime.set(0, n + 1);
+        isPrime.set(0);
+        isPrime.set(1);
+        for(int i = 2; i * i <= n ; i++)
+        {
+            if(isPrime.get(i))
+                for(int j = i * i ; j <= n; j += i)
+                    isPrime.clear(j);
+        }
+        return isPrime;
+    }
 
     static long moduloInversePrime(long a) {
-        long ans = modPow(a , m - 2);
         //System.out.println("modulo inverse of " + a + " -> " + ans);
-        return ans;
+        return modPow(a , mod - 2);
     }
 
     static long mult(long a, long b)
     {
-        return (a * (long)b % m);
+        return (a * b % mod);
     }
 
     static long modPow(long a, int step)
@@ -202,82 +171,19 @@ public class Template {
         return ans;
     }
 
-    static long longModulus(long x , long m) {
-        long d = x / m;
-        return x - d * m;
+    static int query(int l , int r) {
+        System.out.println("? " + l + " " + r);
+        System.out.flush();
+        return f.nextInt();
     }
 
-    static long[] inputArray(int n) throws IOException {
-        long a[] = new long[n];
-        st = new StringTokenizer(br.readLine());
-        for(int i = 0 ; i < n ; i++) {
-            a[i] = Long.parseLong(st.nextToken());
-        }
-        return a;
-    }
 
-    static int search(int numbers[] , int target) {
-        //calculates first occurance
-        int endIndex = -1;
-        int low = 0;
-        int high = numbers.length - 1;
-        while (low <= high) {
-            int mid = (high - low) / 2 + low;
-            if (numbers[mid] > target) {
-                high = mid - 1;
-            } else if (numbers[mid] == target) {
-                endIndex = mid;
-                low = mid + 1;
-            } else {
-                low = mid + 1;
-                endIndex = mid;
-            }
-        }
-        return endIndex;
-    }
+    private static int mod = (int) (1e9 + 7);
+    static int MAX_N = (int) Math.sqrt(1e9);
 
-    static int lower_bound(int a[] , int val , int low , int high) {
-        int res = high + 1;
-        while(low <= high) {
-            int mid = (low + high) / 2;
-            if(a[mid] >= val) {
-                high = mid - 1;
-                res = mid;
-            }
-            else {
-                low = mid + 1;
-            }
-        }
-        return res;
-    }
-
-    static int upper_bound(int a[] , int val , int low , int high) {
-        int res = high + 1;
-        while(low <= high) {
-            int mid = (low + high) / 2;
-            if(a[mid] > val) {
-                high = mid - 1;
-                res = mid;
-            }
-            else {
-                low = mid + 1;
-            }
-        }
-        return res;
-    }
-
-    static int[] equal_range(int a[] , int val , int low , int high) {
-        return new int[]{lower_bound(a , val , low , high) , upper_bound(a , val , low , high) -1};
-    }
 
     public static void main(String[] args) throws IOException {
-        int a[] = new int[]{1 ,4 ,3 ,6 ,3 , 3 , 4, 6 , 2};
-        Arrays.sort(a);
-        System.out.println(Arrays.toString(a));
-        int i= 7;
-        System.out.println(lower_bound(a , i , 0 , a.length - 1));
-        System.out.println(upper_bound(a , i , 0 , a.length - 1));
-        System.out.println(Arrays.toString(equal_range(a, i, 0, a.length - 1)));
+
     }
 
 

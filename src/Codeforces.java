@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+
 public class Codeforces {
 
     public static class FastReader {
@@ -49,84 +50,129 @@ public class Codeforces {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
     static StringBuilder sb = new StringBuilder("");
-    private static int m = (int)1e9 + 7;
+    private static int m = (int) 1e9 + 7;
     static int MAX = 500005;
     static long[] fact;
 
     static int[] inputArray(int n) throws IOException {
         int[] a = new int[n];
-        for(int i = 0 ; i < n ; i++) {
+        for (int i = 0; i < n; i++) {
             a[i] = f.nextInt();
         }
         return a;
     }
 
+    private static class SegmentTree {
+        int[] array;
+        int[] tree;
+        int n;
+        int max;
+
+        SegmentTree(int a[], int n) {
+            this.tree = new int[4 * n + 1];
+            this.array = a;
+            this.n = n;
+            buildTree();
+        }
+
+        void buildTree() {
+            buildTreeHelper(0, 0, n - 1);
+        }
+
+        void buildTreeHelper(int i, int start, int end) {
+            if (start > end) {
+                return;
+            }
+            if (start == end) {
+                tree[i] = array[start];
+                return;
+            }
+            int mid = (start + end) / 2;
+            buildTreeHelper(2 * i + 1, start, mid);
+            buildTreeHelper(2 * i + 2, mid + 1, end);
+            tree[i] = Math.max(tree[2 * i + 1], tree[2 * i + 2]);
+        }
+
+        char overlap(int start, int end, int qs, int qe) {
+            if (qe < start || qs > end || start > end) {
+                return 0;
+            }
+            if (qs <= start && qe >= end) {
+                return 2;
+            }
+            return 1;
+        }
+
+        int query(int start, int end) {
+            return andQueryHelper(0, 0, n - 1, start, end);
+        }
+
+        int andQueryHelper(int i, int start, int end, int qs, int qe) {
+            if (overlap(start, end, qs, qe) == 0) {
+                return 0;
+            }
+            if (overlap(start, end, qs, qe) == 1) {
+                int mid = (start + end) / 2;
+                return Math.max(andQueryHelper(2 * i + 1, start, mid, qs, qe),
+                        andQueryHelper(2 * i + 2, mid + 1, end, qs, qe));
+            } else {
+                return tree[i];
+            }
+        }
+    }
+
+    static int query(int l, int r) {
+        System.out.println("? " + l + " " + r);
+        System.out.flush();
+        int res = f.nextInt();
+        System.out.flush();
+        return res;
+    }
+
     public static void main(String[] args) throws IOException {
-        int n = f.nextInt() , x = f.nextInt();
-        long a[] = new long[n];
-        for(int i = 0; i < n ; i++) {
-            a[i] = f.nextLong();
+
+        int t = f.nextInt();
+        while(t-- != 0) {
+            int n = f.nextInt();
+            int a[] = inputArray(n);
+            Arrays.sort(a);
+            TreeMap<Integer, Integer> frq = new TreeMap<>();
+            for(int x : a) {
+                if(frq.containsKey(x)) {
+                    frq.replace(x, frq.get(x) + 1);
+                }
+                else {
+                    frq.put(x, 1);
+                }
+            }
+
+            int s = 0;
+            ArrayList<Integer> list = new ArrayList<>();
+            for(Map.Entry<Integer, Integer> en : frq.entrySet()) {
+                s += en.getValue();
+                list.add(en.getValue());
+            }
+
+            Collections.sort(list);
+
+            if(list.get(list.size()-1) > s - list.get(list.size()-1)) {
+                System.out.println(list.get(list.size()-1) - (s-list.get(list.size()-1)));
+            }
+            else {
+                int diff = (s - list.get(list.size()-1)) - list.get(list.size()-1);
+                if((diff&1) == 1) {
+                    System.out.println(1);
+                }
+                else {
+                    System.out.println(0);
+                }
+            }
         }
-        System.out.println(Code(a , n , x));
+
     }
 
-    static long[] maxSumSubArray(long a[] , int n) {
-        long[] res = new long[3];
-        res[1] = -1;
-        res[2] = 0;
-        int start = 0;
-        long s = 0;
-        for(int i = 0 ; i < n ; i++) {
-            s += a[i];
-            if(s < 0) {
-                start = i + 1;
-                s = 0;
-            }
-            if(s > res[2]) {
-                res[0] = start;
-                res[1] = i;
-                res[2] = s;
-            }
-        }
-        return res;
-    }
-
-    static long[] minSumSubArray(long a[] , int n) {
-        long[] res = new long[3];
-        res[1] = -1;
-        int start = 0;
-        long s = 0;
-        for(int i = 0 ; i < n ; i++) {
-            s += a[i];
-            if(s > 0) {
-                start = i + 1;
-                s = 0;
-            }
-            if(s < res[2]) {
-                res[0] = start;
-                res[1] = i;
-                res[2] = s;
-            }
-        }
-        return res;
-    }
-
-    private static long Code(long a[] , int n , int x) {
-        if(x <= 0) {
-            long[] min = minSumSubArray(a , n);
-            for(int i = (int) min[0]; i <= min[1] ; i++) {
-                a[i] *= x;
-            }
-        }
-        else {
-            long[] max = maxSumSubArray(a , n);
-            for(int i = (int) max[0]; i <= max[1] ; i++) {
-                a[i] *= x;
-            }
-        }
-        return maxSumSubArray(a , n)[2];
-    }
 }
+
 /*
 5
 2 1
@@ -135,3 +181,5 @@ public class Codeforces {
 217871987498122 10
 100000000000000001 1
  */
+
+

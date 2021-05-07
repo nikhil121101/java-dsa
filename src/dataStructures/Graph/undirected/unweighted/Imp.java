@@ -3,7 +3,7 @@ package dataStructures.Graph.undirected.unweighted;
 import java.io.*;
 import java.util.*;
 
-public class Imp {
+class diameterImp {
 
 	private static class Tree {
 		int index;
@@ -58,15 +58,14 @@ public class Imp {
 
 	static FastReader f = new FastReader();
 	static StringBuilder sb = new StringBuilder("");
-	private static long mod = (long)Math.pow(2 , 32);
 
 	static int n , maxN;
 	static ArrayList<HashSet<Integer>> adjList;
 
 	static void initializeGraph() {
-		adjList = new ArrayList<HashSet<Integer>>();
+		adjList = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
-			adjList.add(new HashSet<Integer>());
+			adjList.add(new HashSet<>());
 		}
 	}
 
@@ -96,7 +95,7 @@ public class Imp {
 		System.out.println();
 	}
 
-	static void BFS(int s , int[] levels , int notThis) {
+	static void BFS(int s , int[] levels) {
 		Queue<Integer> queue = new LinkedList<Integer>();
 		boolean[] visited = new boolean[n];
 		Arrays.fill(visited, false);
@@ -112,7 +111,7 @@ public class Imp {
 				curNode = queue.remove();
 				HashSet<Integer> curHashSet = adjList.get(curNode);
 				for (int temp : curHashSet) {
-					if (!visited[temp] && temp != notThis) {
+					if (!visited[temp]) {
 						visited[temp] = true;
 						queue.add(temp);
 					}
@@ -130,16 +129,61 @@ public class Imp {
 		//System.out.println();
 	}
 
-//	static int diameterOfTree() {
-//		int s = 0;
-//		int f1[] = new int[2];
-//		BFS(s , f1);
-//		//System.out.println(Arrays.toString(f1));
-//		int f2[] = new int[2];
-//		BFS(f1[0] , f2);
-//		//System.out.println(Arrays.toString(f1));
-//		return f2[1];
-//	}
+	static int diameterOfTree(int[] ends) {
+		int s = 0;
+		int f1[] = new int[2];
+		BFS(s , f1);
+		ends[0] = f1[0];
+		//System.out.println(Arrays.toString(f1));
+		int f2[] = new int[2];
+		BFS(f1[0] , f2);
+		ends[1] = f2[0];
+		//System.out.println(Arrays.toString(f1));
+		return f2[1];
+	}
+
+	static void solve() {
+		int[] diameterEnds = new int[2];
+		diameterOfTree(diameterEnds);
+		int[] parent =new int[n];
+		Arrays.fill(parent , -1);
+		DFS_plus_parent(diameterEnds[0] , new boolean[n] , parent);
+		ArrayList<Integer> path = new ArrayList<>();
+		int cur = diameterEnds[1];
+		while(cur != -1) {
+			path.add(cur);
+			cur = parent[cur];
+		}
+		Collections.reverse(path);
+		int height[] = new int[n];
+		for(int i = 1 ; i < path.size() - 1 ; i++) {
+			getHeight(path.get(i) , path.get(i-1) , path.get(i+1) , -1 , height);
+		}
+	}
+
+	private static int getHeight(int s, int prev, int next, int parent , int[] height) {
+		if(height[s] != 0) {
+			return height[s];
+		}
+		int max = 0;
+		for(int c : adjList.get(s)) {
+			if(c != prev && c != next && c != parent) {
+				max = getHeight(c , prev , next , s , height);
+			}
+		}
+		return height[s];
+	}
+
+
+	private static void DFS_plus_parent(int s, boolean[] visited, int[] parent) {
+		visited[s] = true;
+		for(int c : adjList.get(s)) {
+			if(!visited[c]) {
+				parent[c] = s;
+				DFS(c , visited , u);
+			}
+		}
+	}
 
 
 	private static void DFS(int s, boolean[] visited, int[][] u) {
@@ -271,7 +315,7 @@ public class Imp {
 		int[] mid = findMiddlePair(x , y);
 		//System.out.println("mid - " + Arrays.toString(mid));
 		int[] farthest = new int[2];
-		BFS(mid[0] , farthest , mid[1]);
+		//BFS(mid[0] , farthest , mid[1]);
 		//System.out.println(" farthest - " + Arrays.toString(farthest));
 		return farthest[1] + distance(mid[0] , y);
 	}
@@ -296,11 +340,15 @@ public class Imp {
 
 	static long[] square;
 	static HashMap<Pair , Long> res;
+	static long mod = (long) Math.pow(2 , 32);
 
 	public static void main(String[] args) throws IOException {
 		n = f.nextInt();
 		int q = f.nextInt();
-		int coins[] = inputArray(n);
+		long coins[] = new long[n];
+		for(int i =0 ; i < n ; i++) {
+			coins[i] = f.nextLong();
+		}
 		initializeGraph();
 		for(int i = 0 ; i < n - 1 ; i++) {
 			int u = f.nextInt() - 1 , v = f.nextInt() - 1;
@@ -319,13 +367,13 @@ public class Imp {
 		System.out.print(sb);
 	}
 
-	static long Code(int U , int v , int[] coins) {
+	static long Code(int U , int v , long[] coins) {
 		if(res.containsKey(new Pair(U , v))) {
 			return res.get(new Pair(U , v));
 		}
-		int lce = lowestCommonAncestor(U , v);
-		long s = square[lce];
-		while(U != lce) {
+		//int lce = lowestCommonAncestor(U , v);
+		long s = 0;
+		while(U != -1) {
 			s = (s + (coins[U] * coins[v]) % mod) % mod;
 			U = u[U][0];
 			v = u[v][0];
@@ -349,12 +397,12 @@ public class Imp {
 		}
 	}
 
-	private static void setSquare(int[] coins) {
+	private static void setSquare(long[] coins) {
 		square = new long[n];
 		dfs(0 , new boolean[n] , coins);
 	}
 
-	private static void dfs(int i , boolean[] visited , int[] coins) {
+	private static void dfs(int i , boolean[] visited , long[] coins) {
 		visited[i] = true;
 		square[i] = (square[i] + (coins[i] * coins[i]) % mod) % mod;
 		for(int x : adjList.get(i)) {
@@ -366,3 +414,13 @@ public class Imp {
 	}
 
 }
+/*
+5 2
+5 4 3 2 1
+1 2
+1 3
+2 4
+2 5
+2 3
+4 4
+ */

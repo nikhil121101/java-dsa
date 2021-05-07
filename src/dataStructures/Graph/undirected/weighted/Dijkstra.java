@@ -111,7 +111,7 @@ Dijkstra {
             if(o == this) {
                 return true;
             }
-            if(!(o instanceof Edge)) {
+            if(!(o instanceof Node)) {
                 return false;
             }
             Node n = (Node)o;
@@ -130,21 +130,63 @@ Dijkstra {
     }
 
     static ArrayList<ArrayList<Node>> adj;
-    static int n , m;
+    static int n , m , k;
+
+    static long res = Long.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
         n = f.nextInt();
         m = f.nextInt();
+        k = f.nextInt();
         adj = new ArrayList<>();
         for(int i = 0 ; i < n ; i++) {
             adj.add(new ArrayList<>());
         }
         for(int i = 0 ; i < m ; i++) {
-            int u = (int)(f.nextToken().charAt(0)) - 'a' , v = (int)(f.nextToken().charAt(0)) - 'a' , w = f.nextInt();
+            int u = f.nextInt() - 1 , v = f.nextInt() - 1 , w = f.nextInt();
             adj.get(u).add(new Node(v , w));
             adj.get(v).add(new Node(u , w));
         }
-        dijkstra(0);
+        printAllPaths(0 , n-1);
+        if(res == Long.MAX_VALUE) {
+            System.out.println(0);
+        }
+        else {
+            System.out.println(res);
+        }
+    }
+
+    public static void printAllPaths(int s, int d)
+    {
+        boolean[] isVisited = new boolean[n];
+
+        printAllPathsUtil(s, d, isVisited, 0 , 0);
+    }
+
+    private static void printAllPathsUtil(Integer u, Integer d,
+                                   boolean[] isVisited,
+                                   long pathLen , int maxEdge)
+    {
+
+        if (u.equals(d)) {
+            //System.out.println("u - " + u + " pathLen - " + pathLen + " maxEdge - " + maxEdge);
+
+            res = Math.min(res , (pathLen - maxEdge) + (maxEdge/k));
+            return;
+        }
+
+        isVisited[u] = true;
+
+        for (Node i : adj.get(u)) {
+            if (!isVisited[i.v] && i.v != u) {
+
+                pathLen += i.weight;
+                printAllPathsUtil(i.v, d, isVisited, pathLen , Math.max(maxEdge , i.weight));
+
+            }
+        }
+
+        isVisited[u] = false;
     }
 
     static long[] dijkstra(int s) {
